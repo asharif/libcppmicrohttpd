@@ -10,10 +10,10 @@ void httpd::DefaultHandler::handle(HttpRequest& request, HttpResponse& response)
 
 }
 
-void httpd::DefaultHandler::handle_streaming_post(HttpRequest& request, HttpResponse& response, std::string filename, std::string content_type,
+void httpd::DefaultHandler::handle_streaming_data(HttpRequest& request, HttpResponse& response, std::string filename, std::string content_type,
 				 	std::string transfer_encoding, const char *data, uint64_t off, size_t size) {
 
-	logger.debug("inside handle_streaming_post");
+	logger.debug("inside handle_streaming_data");
 
 	if(off == 0) {
 

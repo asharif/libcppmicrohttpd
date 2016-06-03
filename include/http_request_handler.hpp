@@ -7,13 +7,23 @@
 
 namespace httpd {
 
+	/**
+	 * All endpoint handlers much inherit and implement the pure virtual functions in this class
+	 */
 	class HttpRequestHandler {
 
 		public:
 
+			/**
+			 * Hanlde requests without any upload data (GET, etc)
+			 */
 			void virtual handle(HttpRequest& request, HttpResponse& response) = 0;
 
-			void virtual handle_streaming_post(HttpRequest& request, HttpResponse& response, std::string filename, std::string content_type,
+			/**
+			 * Hanlde request with streaming upload data (POST, etc).  This  method will be called over and over 
+			 * while there is still data streaming in
+			 */
+			void virtual handle_streaming_data(HttpRequest& request, HttpResponse& response, std::string filename, std::string content_type,
 				 	std::string transfer_encoding, const char *data, uint64_t off, size_t size) = 0;
 
 	};

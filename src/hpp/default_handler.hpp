@@ -18,7 +18,7 @@ namespace httpd {
 
 		void handle(HttpRequest& request, HttpResponse& response);
 
-		void handle_streaming_post(HttpRequest& request, HttpResponse& response, std::string filename, std::string content_type,
+		void handle_streaming_data(HttpRequest& request, HttpResponse& response, std::string filename, std::string content_type,
 				 	std::string transfer_encoding, const char *data, uint64_t off, size_t size);
 
 

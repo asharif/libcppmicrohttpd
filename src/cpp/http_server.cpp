@@ -5,10 +5,11 @@
 
 log4cpp::Category& httpd::HttpServer::logger = log4cpp::Category::getRoot();
 
-httpd::HttpServer::HttpServer(uint32_t port, uint32_t tpool_size) {
+httpd::HttpServer::HttpServer(uint32_t port, uint32_t tpool_size, uint32_t data_steam_buffer) {
 
 	this->port = port;
 	this->tpool_size = tpool_size;
+	this->data_steam_buffer = data_steam_buffer;
 
 }
 
@@ -44,6 +45,13 @@ void httpd::HttpServer::start() {
 
 }
 
+
+uint32_t httpd::HttpServer::get_ds_buffer_size() {
+
+	return this->data_steam_buffer;
+
+}
+
 int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_Connection *connection, const char *url,
 		const char *method, const char *version, const char *upload_data,
 		size_t *upload_data_size, void **ptr) {
@@ -69,7 +77,7 @@ int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_
 		Wrapper* wrapper = new Wrapper(server, request, response);
 
 		//create our post processor
-		MHD_PostProcessor* post_processor = MHD_create_post_processor(connection, 1024, &httpd::HttpServer::post_processor, wrapper);
+		MHD_PostProcessor* post_processor = MHD_create_post_processor(connection, server->get_ds_buffer_size(), &httpd::HttpServer::post_processor, wrapper);
 		request->set_post_processor(post_processor);
 
 		//lets put the wrapper into ptr so it gets passed back to us each time this is called
@@ -197,7 +205,7 @@ void httpd::HttpServer::front_controller(HttpRequest* request, HttpResponse* res
 	if( got != endpoint_handlers.end()) {
 
 		//if the key exists then lets handle stuff
-		endpoint_handlers[request->get_header("req_url")]->handle_streaming_post(*request, *response, std::string((filename == NULL) ? "" : filename),
+		endpoint_handlers[request->get_header("req_url")]->handle_streaming_data(*request, *response, std::string((filename == NULL) ? "" : filename),
 				std::string((content_type == NULL) ? "" : content_type ), std::string((transfer_encoding == NULL) ? "" : filename), data, off, size);
 
 	}

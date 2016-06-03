@@ -10,7 +10,7 @@
 #endif
 
 #ifndef DEFAULT_THREAD_POOL_SIZE
-#define DEFAULT_THREAD_POOL_SIZE 200
+#define DEFAULT_THREAD_POOL_SIZE 4
 #endif
 
 void configure_log4cpp();
@@ -27,14 +27,15 @@ int main(int argc, char *argv[]) {
 
 	try {
 
-		int port;
-		int tp;
+		uint32_t port;
+		uint32_t tp;
 
+		//boost is overkill for this, but so clean
 		options_description desc("Usage");
 		desc.add_options()
 			("help", "Show help message")
-			("port", value<int>(&port)->default_value(DEFAULT_PORT), "Port to run http server on")
-			("tp", value<int>(&tp)->default_value(DEFAULT_THREAD_POOL_SIZE), "The size of the server threadpool");
+			("port", value<uint32_t>(&port)->default_value(DEFAULT_PORT), "Port to run http server on")
+			("tp", value<uint32_t>(&tp)->default_value(DEFAULT_THREAD_POOL_SIZE), "The size of the server threadpool");
 
 		variables_map vm;
 		store(parse_command_line(argc, argv, desc), vm);
@@ -49,7 +50,8 @@ int main(int argc, char *argv[]) {
 
 		logger.info("Starting server");
 
-		HttpServer server(port, tp);
+		//start the server on port (port), a threadpool (tp), and a buffer for upload data (1MiB)
+		HttpServer server(port, tp, 1048576);
 		DefaultHandler default_handler;
 		server.register_handler("/", default_handler);
 		server.start();

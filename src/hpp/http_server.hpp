@@ -22,6 +22,8 @@ namespace httpd {
 			uint32_t port;
 			//the size of the threadpool
 			uint32_t tpool_size;
+			//the buffer size to use when reading upload (POST, etc) data
+			uint32_t data_steam_buffer;
 
 			//registered handlers for paths
 			std::unordered_map<std::string, HttpRequestHandler*> endpoint_handlers;
@@ -57,8 +59,9 @@ namespace httpd {
 
 		public:
 
-			HttpServer(uint32_t port, uint32_t tpool_size);
+			HttpServer(uint32_t port, uint32_t tpool_size, uint32_t data_steam_buffer);
 			~HttpServer();
+			uint32_t get_ds_buffer_size();
 			void register_handler(std::string path, HttpRequestHandler& handler);
 			void start();
 
