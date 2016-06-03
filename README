@@ -18,7 +18,7 @@ Currently the Makefile makes some assumptions about the build environment.  This
 How to build:
 
 * To build the libary run: make lib
-* To build the libary with debug symbols run: make lib
+* To build the libary with debug symbols run: make lib-debug
 * To build the test binary run: make
 * To build the test binary with debug symbols run: make debug
 
