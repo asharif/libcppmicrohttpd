@@ -1,45 +1,41 @@
 Introduction:
 
-	A C++ wrapper that supports a super small subset of the features of GNU libmicrohttpd (http://www.gnu.org/software/libmicrohttpd/).
-	It aims to provide a easier OOP interface for the less smart (like myself!).  
+A C++ wrapper that supports a super small subset of the features of GNU libmicrohttpd (http://www.gnu.org/software/libmicrohttpd/). It aims to provide a easier OOP interface for the less smart (like myself!).  
 
 Platform Support:
 
-	Currently the Makefile only supports OSX.  It needs to be updated to work with Linuxas well. libmicrohttpd has a linux
-	only option (MHD_USE_EPOLL_LINUX_ONLY) that can significanty improve performance. 
+Currently the Makefile only supports OSX.  It needs to be updated to work with Linuxas well. libmicrohttpd has a linux only option (MHD_USE_EPOLL_LINUX_ONLY) that can significanty improve performance. 
 
 Prerequisites:
 
-	Currently the Makefile makes some assumptions about the build environment.  This should be updated and cleaned up a bit 
-	later on. Some dependencies can be made optional in the future if a smaller binary size is desired.
+Currently the Makefile makes some assumptions about the build environment.  This should be updated and cleaned up a bit later on. Some dependencies can be made optional in the future if a smaller binary size is desired.
 
-	1.  Homebrew
-	2.  libmicrohttpd 1.60.0_2 (brew install libmicrohttpd)
-	3.  boost 1.60_2 (brew install boost)
-	4.  liblog4cpp (brew install liblog4cpp)
+1.  Homebrew
+2.  libmicrohttpd 1.60.0_2 (brew install libmicrohttpd)
+3.  boost 1.60_2 (brew install boost)
+4.  liblog4cpp (brew install liblog4cpp)
 	
 How to build:
 
-	* To build the libary run: make lib
-	* To build the libary with debug symbols run: make lib
-	* To build the test binary run: make
-	* To build the test binary with debug symbols run: make debug
+* To build the libary run: make lib
+* To build the libary with debug symbols run: make lib
+* To build the test binary run: make
+* To build the test binary with debug symbols run: make debug
 
 Test binary:
 	
-	To run the test binary run:
+To run the test binary run:
 	
-	1.  make
-	2.  bin/cppmicrohttpd --help.  
-	
-	That will give you options on what port and how big of a threadpool.  One thing I've noticed in testing is that 
-	libmicrohttpd runs faster with less threads.
+1.  make
+2.  bin/cppmicrohttpd --help.  
+
+That will give you options on what port and how big of a threadpool.  One thing I've noticed in testing is that libmicrohttpd runs faster with less threads.
 
 Writing handlers:
-	
-	The idea behind handlers is to create a class that will handle requests to a http endpoint.  All handlers must inherit 
-	from HttpRequestHandler (include/http_request_handler.hpp) and implement it's pure virtual functions.  See the DefaultHandler
-	for details (src/hpp/default_handler.hpp & src/cpp/default_handler.cpp)
+
+The idea behind handlers is to create a class that will handle requests to a http endpoint.  All handlers must inherit 
+from HttpRequestHandler (include/http_request_handler.hpp) and implement it's pure virtual functions.  See the DefaultHandler
+for details (src/hpp/default_handler.hpp & src/cpp/default_handler.cpp)
 
 Min code example:
 
@@ -51,5 +47,5 @@ server.start();
 
 License:
 	
-	GNU GPL 3.0
+GNU GPL 3.0
 
