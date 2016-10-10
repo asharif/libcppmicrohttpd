@@ -10,10 +10,9 @@ Prerequisites:
 
 Currently the Makefile makes some assumptions about the build environment.  This should be updated and cleaned up a bit later on. Some dependencies can be made optional in the future if a smaller binary size is desired.
 
-1.  Homebrew
-2.  libmicrohttpd 1.60.0_2 (brew install libmicrohttpd)
-3.  boost 1.60_2 (brew install boost)
-4.  liblog4cpp (brew install liblog4cpp)
+1.  libmicrohttpd 1.60.0_2 (brew install libmicrohttpd)
+2.  boost 1.60_2 (brew install boost)
+3.  liblog4cpp (brew install liblog4cpp)
 	
 How to build:
 

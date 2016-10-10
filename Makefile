@@ -1,9 +1,9 @@
 SHELL=/bin/bash
 SRC=`pwd`/src/cpp/**
-INC=-I `pwd`/include/ -I `pwd`/src/hpp/ -I /usr/local/Cellar/libmicrohttpd/0.9.47_1/include/ -I /usr/local/Cellar/boost/1.60.0_2/include/boost/ -I /usr/local/Cellar/log4cpp/1.1.1/include/
-DYNAMIC_LIB=/usr/local/Cellar/libmicrohttpd/0.9.47_1/lib/libmicrohttpd.dylib /usr/local/Cellar/boost/1.60.0_2/lib/libboost_program_options.dylib /usr/local/Cellar/log4cpp/1.1.1/lib/liblog4cpp.dylib
+INC=-I `pwd`/include/ -I `pwd`/src/hpp/ -I $(BOOST_CPP_HOME) 
+DYNAMIC_LIB=/usr/lib/x86_64-linux-gnu/libmicrohttpd.so $(BOOST_CPP_HOME)/stage/lib/libboost_program_options.so /usr/lib/liblog4cpp.so
 BIN=bin/cppmicrohttpd
-LIB=lib/libcppmicrohttpd.dylib
+LIB=lib/libcppmicrohttpd.so
 
 .PHONY: defalut
 
