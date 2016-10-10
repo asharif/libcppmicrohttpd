@@ -2,7 +2,6 @@
 #define HTTP_SERVER_HPP
 
 #include <microhttpd.h>
-#include <log4cpp/Category.hh>
 #include <string.h>
 #include <http_response.hpp>
 #include <http_request.hpp>
@@ -13,8 +12,6 @@ namespace httpd {
 	class HttpServer {
 
 		private:
-
-			static log4cpp::Category &logger;
 
 			//the http daemon 
 			struct MHD_Daemon *mhd_daemon;

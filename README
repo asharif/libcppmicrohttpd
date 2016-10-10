@@ -4,15 +4,14 @@ A C++ wrapper that supports a super small subset of the features of GNU libmicro
 
 Platform Support:
 
-Currently the Makefile only supports OSX.  It needs to be updated to work with Linuxas well. libmicrohttpd has a linux only option (MHD_USE_EPOLL_LINUX_ONLY) that can significanty improve performance. 
+Tested on OSX and Ubuntu Linux.  libmicrohttpd has a linux only option (MHD_USE_EPOLL_LINUX_ONLY) that can significanty improve performance.
 
 Prerequisites:
 
 Currently the Makefile makes some assumptions about the build environment.  This should be updated and cleaned up a bit later on. Some dependencies can be made optional in the future if a smaller binary size is desired.
 
-1.  libmicrohttpd 1.60.0_2 (brew install libmicrohttpd)
-2.  boost 1.60_2 (brew install boost)
-3.  liblog4cpp (brew install liblog4cpp)
+1.  libmicrohttpd 1.60.0_2 
+  * put wherever the build directory of this is into LIB_MICROHTTP_HOME environment variable
 	
 How to build:
 

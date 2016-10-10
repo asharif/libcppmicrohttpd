@@ -1,7 +1,5 @@
 #include <default_handler.hpp>
 
-log4cpp::Category& httpd::DefaultHandler::logger = log4cpp::Category::getRoot();
-
 void httpd::DefaultHandler::handle(HttpRequest& request, HttpResponse& response) {
 
 	build_response(request, response);
@@ -13,8 +11,7 @@ void httpd::DefaultHandler::handle(HttpRequest& request, HttpResponse& response)
 void httpd::DefaultHandler::handle_streaming_data(HttpRequest& request, HttpResponse& response, std::string filename, std::string content_type,
 				 	std::string transfer_encoding, const char *data, uint64_t off, size_t size) {
 
-	logger.debug("inside handle_streaming_data");
-
+//logger.debug("inside handle_streaming_data"); 
 	if(off == 0) {
 
 		//if off is 0 then this is the firt call

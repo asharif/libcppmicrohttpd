@@ -2,8 +2,14 @@
 #include <chrono>
 #include <thread>
 #include <http_wrapper.hpp>
+#include <sstream>
+#include <iostream>
 
-log4cpp::Category& httpd::HttpServer::logger = log4cpp::Category::getRoot();
+#ifdef Linux
+#define USE_EPOLL MHD_USE_EPOLL_LINUX_ONLY
+#else
+#define USE_EPOLL 0
+#endif
 
 httpd::HttpServer::HttpServer(uint32_t port, uint32_t tpool_size, uint32_t data_steam_buffer) {
 
@@ -22,7 +28,7 @@ void httpd::HttpServer::start() {
 
 	using namespace std;
 
-	mhd_daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, port, NULL, NULL, &front_controller_c_hook, this,
+	mhd_daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | USE_EPOLL, port, NULL, NULL, &front_controller_c_hook, this,
 			MHD_OPTION_THREAD_POOL_SIZE, tpool_size, MHD_OPTION_END);
 
 	if(mhd_daemon == NULL) {
@@ -34,7 +40,7 @@ void httpd::HttpServer::start() {
 
 	stringstream port_msg;
 	port_msg	<< "HttpServer running on port: " <<  port << " with a threadpool size of: " << tpool_size;
-	logger.info(port_msg.str());
+	cout << (port_msg.str()) << endl;
 
 	while(true) {
 
@@ -55,6 +61,8 @@ uint32_t httpd::HttpServer::get_ds_buffer_size() {
 int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_Connection *connection, const char *url,
 		const char *method, const char *version, const char *upload_data,
 		size_t *upload_data_size, void **ptr) {
+
+  using namespace std;
 
 	//cast the pointer to a http server
 	HttpServer* server = (HttpServer*)registered_arg;
@@ -104,7 +112,7 @@ int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_
 		int process_result = MHD_post_process(post_processor, upload_data, *upload_data_size);
 		if(process_result == MHD_NO) {
 
-			logger.error("there was an issue processing post data yo!");
+			cerr << "there was an issue processing post data yo!" << endl;
 		}
 
 		if(*upload_data_size > 1024) {

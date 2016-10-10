@@ -1,32 +1,34 @@
 SHELL=/bin/bash
 SRC=`pwd`/src/cpp/**
 INC=-I `pwd`/include/ -I `pwd`/src/hpp/ -I $(BOOST_CPP_HOME) 
-DYNAMIC_LIB=/usr/lib/x86_64-linux-gnu/libmicrohttpd.so $(BOOST_CPP_HOME)/stage/lib/libboost_program_options.so /usr/lib/liblog4cpp.so
+SHARED_LIB_DEP=$(LIB_MICROHTTP_HOME)/libmicrohttpd.so
 BIN=bin/cppmicrohttpd
-LIB=lib/libcppmicrohttpd.so
+SHARED_LIB=lib/libcppmicrohttpd.so
+LINUX=`uname`
 
-.PHONY: defalut
+.PHONY: defalut, debug, lib, lib-debug
 
 default: clean dir
-	@g++-5 -std=c++14 -Wall -Ofast -c $(INC) $(SRC) 
+	@g++-5 -std=c++14 -D$(LINUX) -Wall -Ofast -c $(INC) $(SRC) 
 	@mv *.o tmp/obj/
-	@g++-5 -std=c++14 -o $(BIN) tmp/obj/** $(DYNAMIC_LIB)
+	@g++-5 -std=c++14 -o $(BIN) tmp/obj/** $(SHARED_LIB_DEP)
 	@rm -rf tmp/
 
 debug: clean dir
-	@g++-5 -std=c++14 -Wall -g -c $(INC) $(SRC) 
+	@g++-5 -std=c++14 -Wall -D$(LINUX) -g -c $(INC) $(SRC) 
 	@mv *.o tmp/obj/
-	@g++-5 -std=c++14 -g -o $(BIN) tmp/obj/** $(DYNAMIC_LIB)
+	@g++-5 -std=c++14 -g -o $(BIN) tmp/obj/** $(SHARED_LIB_DEP)
 
 lib: clean dir
-	@g++-5 -std=c++14 -Wall -c -fpic -Ofast $(INC) $(SRC) 
+	@g++-5 -std=c++14 -Wall -D$(LINUX) -c -fpic -Ofast $(INC) $(SRC) 
 	@mv *.o tmp/obj/
-	@g++-5 -shared -o $(LIB) tmp/obj/** $(DYNAMIC_LIB)
+	@g++-5 -shared -o $(SHARED_LIB) tmp/obj/** $(SHARED_LIB_DEP)
 
 lib-debug: clean dir
-	@g++-5 -std=c++14 -Wall -g -c -fpic -Ofast $(INC) $(SRC) 
+	@g++-5 -std=c++14 -Wall -D$(LINUX) -g -c -fpic -Ofast $(INC) $(SRC) 
 	@mv *.o tmp/obj/
-	@g++-5 -shared -o $(LIB) tmp/obj/** $(DYNAMIC_LIB)
+	@g++-5 -shared -o $(SHARED_LIB) tmp/obj/** $(SHARED_LIB_DEP)
+	@g++-5 -static -o $(SHARED_LIB) tmp/obj/** $(SHARED_LIB_DEP)
 
 dir:
 	@mkdir -p bin/
