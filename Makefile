@@ -26,7 +26,7 @@ lib: clean dir
 	@g++-5 -shared -o $(SHARED_LIB) tmp/obj/** $(SHARED_LIB_DEP)
 
 lib-debug: clean dir
-	@g++-5 -std=c++14 -Wall -D$(LINUX) -g -c -fpic -Ofast $(INC) $(SRC) 
+	@g++-5 -std=c++14 -Wall -D$(LINUX) -g -c -fpic $(INC) $(SRC) 
 	@mv *.o tmp/obj/
 	@g++-5 -shared -o $(SHARED_LIB) tmp/obj/** $(SHARED_LIB_DEP)
 
