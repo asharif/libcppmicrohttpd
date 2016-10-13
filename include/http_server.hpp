@@ -1,6 +1,8 @@
 #ifndef HTTP_SERVER_HPP
 #define HTTP_SERVER_HPP
 
+
+#include <log4cpp/Category.hh>
 #include <microhttpd.h>
 #include <string.h>
 #include <http_response.hpp>
@@ -13,6 +15,7 @@ namespace httpd {
 
 		private:
 
+      static log4cpp::Category &logger;
 			//the http daemon 
 			struct MHD_Daemon *mhd_daemon;
 			//what port we want to run the http server on

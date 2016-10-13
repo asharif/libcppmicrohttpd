@@ -26,6 +26,12 @@ namespace httpd {
 			 */
 			std::string map_lookup(std::string key, std::unordered_map<std::string, std::string> map);
 
+      /**
+       * This map allows storing request variables.  void* is probably no good but my c++
+       * is not strong enough.  @TODO: replace void* with something more c++y
+       */
+      std::unordered_map<std::string, void*> props;
+
 			bool has_post_data;
 			MHD_PostProcessor *post_processor;
 
@@ -51,6 +57,10 @@ namespace httpd {
 
 			void set_post_processor(MHD_PostProcessor *post_processor);
 			MHD_PostProcessor* get_post_processor();
+
+      void set_prop(std::string key, void* value);
+
+      void* get_prop(std::string key);
 			
 	};
 

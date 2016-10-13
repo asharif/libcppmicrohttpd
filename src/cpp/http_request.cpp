@@ -89,5 +89,27 @@ MHD_PostProcessor* httpd::HttpRequest::get_post_processor(){
 
 }
 
+void httpd::HttpRequest::set_prop(std::string key, void* value) {
+
+  this->props[key] = value;
+
+}
+
+void* httpd::HttpRequest::get_prop(std::string key) {
+
+  void *result = NULL;
+
+  std::unordered_map<std::string, void*>::const_iterator got = this->props.find(key);
+
+	if( got != this->props.end()) {
+
+    result = this->props[key];
+  }
+
+  return result;
+
+}
+
+
 
 

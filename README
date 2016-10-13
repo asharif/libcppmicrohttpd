@@ -43,6 +43,11 @@ DefaultHandler default_handler;
 server.register_handler("/", default_handler);
 server.start();
 
+POST:
+
+If you are using post data remember that libmicrohttp only supports "application/x-www-form-urlencoded" and "multipart/form-data".  So you need to assign
+the data to a variable like "curl -X POST localhost:8080 -d 'data=abc'
+
 License:
 	
 GNU GPL 3.0

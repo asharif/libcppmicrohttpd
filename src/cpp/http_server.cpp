@@ -11,6 +11,8 @@
 #define USE_EPOLL 0
 #endif
 
+log4cpp::Category& httpd::HttpServer::logger = log4cpp::Category::getRoot();
+
 httpd::HttpServer::HttpServer(uint32_t port, uint32_t tpool_size, uint32_t data_steam_buffer) {
 
 	this->port = port;
@@ -28,19 +30,19 @@ void httpd::HttpServer::start() {
 
 	using namespace std;
 
-	mhd_daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | USE_EPOLL, port, NULL, NULL, &front_controller_c_hook, this,
+	mhd_daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY , port, NULL, NULL, &front_controller_c_hook, this,
 			MHD_OPTION_THREAD_POOL_SIZE, tpool_size, MHD_OPTION_END);
 
 	if(mhd_daemon == NULL) {
 
-		cout << "Could not init the http server!" << endl;
+		logger.error("Could not init the http server!");
 		exit(1);
 
 	}
 
 	stringstream port_msg;
 	port_msg	<< "HttpServer running on port: " <<  port << " with a threadpool size of: " << tpool_size;
-	cout << (port_msg.str()) << endl;
+	logger.info(port_msg.str());
 
 	while(true) {
 
@@ -86,7 +88,8 @@ int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_
 
 		//create our post processor
 		MHD_PostProcessor* post_processor = MHD_create_post_processor(connection, server->get_ds_buffer_size(), &httpd::HttpServer::post_processor, wrapper);
-		request->set_post_processor(post_processor);
+
+    request->set_post_processor(post_processor);
 
 		//lets put the wrapper into ptr so it gets passed back to us each time this is called
 		*ptr = wrapper;
@@ -112,18 +115,11 @@ int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_
 		int process_result = MHD_post_process(post_processor, upload_data, *upload_data_size);
 		if(process_result == MHD_NO) {
 
-			cerr << "there was an issue processing post data yo!" << endl;
+			logger.error("there was an issue processing post data yo!");
 		}
 
-		if(*upload_data_size > 1024) {
-
-			*upload_data_size -= 1024 ;
-
-		} else {
-
-			*upload_data_size = 0;
-
-		};
+    //let it know we've processed everything that was uploaded
+    *upload_data_size = 0;
 
 		result = MHD_YES;
 
@@ -145,6 +141,9 @@ int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_
 		} else {
 
 			MHD_destroy_post_processor(wrapper->get_request()->get_post_processor());
+      
+      //call the front controller once last time
+      server->front_controller(wrapper->get_request(), wrapper->get_response(), NULL, NULL, NULL, NULL, UINT64_MAX, 0);
 
 		}
 
@@ -163,7 +162,10 @@ int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_
 
 int httpd::HttpServer::request_header_builder(void *cls, enum MHD_ValueKind kind, const char *key, const char *value) {
 
-	if(kind == MHD_HEADER_KIND) {
+
+  //headers should come in as as MHD_HEADER_KIND(1) but they are comming in as MHD_OPTION_HTTPS_MEM_CERT(9)
+  //have no idea why but this hack needs to go away @TODO:remove this hack when you understand why this is happening
+	if(kind == 9) { 
 
 		//lets add the header to the request 
 		((HttpRequest*)cls)->add_header(std::string(key), std::string(value));
@@ -181,7 +183,6 @@ int httpd::HttpServer::request_header_builder(void *cls, enum MHD_ValueKind kind
 
 int httpd::HttpServer::post_processor (void *cls, enum MHD_ValueKind kind, const char *key, const char *filename, const char *content_type,
 		const char *transfer_encoding, const char *data, uint64_t off, size_t size) {
-
 
 	Wrapper *wrapper = (Wrapper*)(cls);
 	wrapper->get_server()->front_controller(wrapper->get_request(), wrapper->get_response(), filename, content_type, transfer_encoding, data, off, size);
