@@ -21,7 +21,8 @@ void httpd::DefaultHandler::handle_streaming_data(HttpRequest& request, HttpResp
 
 	} 
 
-	response.add_to_buffer(data);
+  if(data != NULL)
+    response.add_to_buffer(data);
 
 	if(!size) {
 
