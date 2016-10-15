@@ -75,10 +75,12 @@ int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_
 
 		//The first time only the headers are valid, lets build a new request, read the headers and the get arguments into it
 		HttpRequest* request = new HttpRequest();
-		MHD_get_connection_values(connection, (MHD_ValueKind(MHD_HEADER_KIND | MHD_GET_ARGUMENT_KIND)), &HttpServer::request_header_builder, request);
+		MHD_get_connection_values(connection, (MHD_ValueKind(MHD_HEADER_KIND | MHD_GET_ARGUMENT_KIND)), &HttpServer::request_arg_builder, request);
 		std::string cpp_url(url);
 		//lets also add request url
-		request->add_header("req_url", cpp_url);
+		request->add_arg("req_url", cpp_url);
+    //and the method
+		request->add_arg("method", method);
 
 		//build a http response
 		HttpResponse* response = new HttpResponse(connection);
@@ -113,15 +115,23 @@ int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_
 
 		MHD_PostProcessor* post_processor = wrapper->get_request()->get_post_processor();
 		int process_result = MHD_post_process(post_processor, upload_data, *upload_data_size);
-		if(process_result == MHD_NO) {
+		if(process_result != MHD_NO) {
 
+      //let it know we've processed everything that was uploaded
+      *upload_data_size = 0;
+      result = MHD_YES;
+
+		} else {
+      
+      //this could be because we don't support post data or an error that I don't understand in libmicrohttpd
 			logger.error("there was an issue processing post data yo!");
-		}
+      //return the response after it's been routed to a controller
+      result = wrapper->get_response()->get_mhd_result();
 
-    //let it know we've processed everything that was uploaded
-    *upload_data_size = 0;
-
-		result = MHD_YES;
+      delete wrapper;
+      *ptr = NULL;
+      
+    }
 
 	} else {
 
@@ -151,7 +161,6 @@ int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_
 		result = wrapper->get_response()->get_mhd_result();
 
 		delete wrapper;
-
 		*ptr = NULL;
 
 	}
@@ -160,22 +169,11 @@ int httpd::HttpServer::front_controller_c_hook(void* registered_arg, struct MHD_
 
 }
 
-int httpd::HttpServer::request_header_builder(void *cls, enum MHD_ValueKind kind, const char *key, const char *value) {
+int httpd::HttpServer::request_arg_builder(void *cls, enum MHD_ValueKind kind, const char *key, const char *value) {
 
+  //lets add arg
+  ((HttpRequest*)cls)->add_arg(std::string(key), std::string(value));
 
-  //headers should come in as as MHD_HEADER_KIND(1) but they are comming in as MHD_OPTION_HTTPS_MEM_CERT(9)
-  //have no idea why but this hack needs to go away @TODO:remove this hack when you understand why this is happening
-	if(kind == 9) { 
-
-		//lets add the header to the request 
-		((HttpRequest*)cls)->add_header(std::string(key), std::string(value));
-
-	} else if( kind == MHD_GET_ARGUMENT_KIND ) {
-
-		//lets add GET arg
-		((HttpRequest*)cls)->add_ga(std::string(key), std::string(value));
-
-	}
 
 	return MHD_YES;
 
@@ -185,39 +183,42 @@ int httpd::HttpServer::post_processor (void *cls, enum MHD_ValueKind kind, const
 		const char *transfer_encoding, const char *data, uint64_t off, size_t size) {
 
 	Wrapper *wrapper = (Wrapper*)(cls);
-	wrapper->get_server()->front_controller(wrapper->get_request(), wrapper->get_response(), filename, content_type, transfer_encoding, data, off, size);
+	return wrapper->get_server()->front_controller(wrapper->get_request(), wrapper->get_response(), filename, content_type, transfer_encoding, data, off, size);
 
-	return MHD_YES;
 
 }
 
 
-void httpd::HttpServer::front_controller(HttpRequest* request, HttpResponse* response) {
+int httpd::HttpServer::front_controller(HttpRequest* request, HttpResponse* response) {
 
-	std::unordered_map<std::string, HttpRequestHandler*>::const_iterator got = endpoint_handlers.find(request->get_header("req_url"));
+	std::unordered_map<std::string, HttpRequestHandler*>::const_iterator got = endpoint_handlers.find(request->get_arg("req_url"));
 
 	if( got != endpoint_handlers.end()) {
 
 		//if the key exists then lets handle stuff
-		endpoint_handlers[request->get_header("req_url")]->handle(*request, *response);
+		return endpoint_handlers[request->get_arg("req_url")]->handle(*request, *response);
 
 	}
 
+  return MHD_NO;
+
 
 }
 
-void httpd::HttpServer::front_controller(HttpRequest* request, HttpResponse* response, const char *filename, const char *content_type,
+int httpd::HttpServer::front_controller(HttpRequest* request, HttpResponse* response, const char *filename, const char *content_type,
 		const char *transfer_encoding, const char *data, uint64_t off, size_t size) {
 
-	std::unordered_map<std::string, HttpRequestHandler*>::const_iterator got = endpoint_handlers.find(request->get_header("req_url"));
+	std::unordered_map<std::string, HttpRequestHandler*>::const_iterator got = endpoint_handlers.find(request->get_arg("req_url"));
 
 	if( got != endpoint_handlers.end()) {
 
 		//if the key exists then lets handle stuff
-		endpoint_handlers[request->get_header("req_url")]->handle_streaming_data(*request, *response, std::string((filename == NULL) ? "" : filename),
+		return endpoint_handlers[request->get_arg("req_url")]->handle_streaming_data(*request, *response, std::string((filename == NULL) ? "" : filename),
 				std::string((content_type == NULL) ? "" : content_type ), std::string((transfer_encoding == NULL) ? "" : filename), data, off, size);
 
 	}
+
+  return MHD_NO;
 
 }
 

@@ -17,13 +17,13 @@ namespace httpd {
 			/**
 			 * Hanlde requests without any upload data (GET, etc)
 			 */
-			void virtual handle(HttpRequest& request, HttpResponse& response) = 0;
+			int virtual handle(HttpRequest& request, HttpResponse& response) = 0;
 
 			/**
 			 * Hanlde request with streaming upload data (POST, etc).  This  method will be called over and over 
 			 * while there is still data streaming in
 			 */
-			void virtual handle_streaming_data(HttpRequest& request, HttpResponse& response, std::string filename, std::string content_type,
+			int virtual handle_streaming_data(HttpRequest& request, HttpResponse& response, std::string filename, std::string content_type,
 				 	std::string transfer_encoding, const char *data, uint64_t off, size_t size) = 0;
 
 	};

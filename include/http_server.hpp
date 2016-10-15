@@ -38,7 +38,7 @@ namespace httpd {
 			/**
 			 * This static method is the libmicrohttpd hook to build the HttpRequest
 			 */
-			static int request_header_builder(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
+			static int request_arg_builder(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
 
 			/**
 			 * This static method will get called over and over again as post data is read off the network
@@ -49,12 +49,12 @@ namespace httpd {
 			/**
 			 * This method routes all but POST requests to registered handlers
 			 */
-			void front_controller(HttpRequest* request, HttpResponse* response);
+			int front_controller(HttpRequest* request, HttpResponse* response);
 
 			/**
 			 * This method routes POST requests to registered handlers
 			 */
-			void front_controller(HttpRequest* request, HttpResponse* response, const char *filename, const char *content_type,
+			int front_controller(HttpRequest* request, HttpResponse* response, const char *filename, const char *content_type,
 				 	const char *transfer_encoding, const char *data, uint64_t off, size_t size);
 
 		public:

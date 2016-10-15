@@ -10,27 +10,15 @@ httpd::HttpRequest::~HttpRequest() {
 
 }
 
-//add or get header values
-void httpd::HttpRequest::add_header(std::string key, std::string value) {
 
-	headers[key] = value;
-
-}
-
-std::string httpd::HttpRequest::get_header(std::string key) {
- 
-	return map_lookup(key, headers);
-	
-}
-
-//add or get GET args
-void httpd::HttpRequest::add_ga(std::string key, std::string value) {
+//add or get GET or HEADER args
+void httpd::HttpRequest::add_arg(std::string key, std::string value) {
 
 	get_args[key] = value;
 
 }
 
-std::string httpd::HttpRequest::get_ga(std::string key) {
+std::string httpd::HttpRequest::get_arg(std::string key) {
 
 	return map_lookup(key, get_args);
 
@@ -49,13 +37,6 @@ std::string httpd::HttpRequest::map_lookup(std::string key, std::unordered_map<s
 	}
 
 	return result;
-
-}
-
-
-std::unordered_map<std::string, std::string> httpd::HttpRequest::get_headers() {
-
-	return this->headers;
 
 }
 

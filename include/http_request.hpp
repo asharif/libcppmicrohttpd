@@ -12,12 +12,7 @@ namespace httpd {
 		private:
 
 			/**
-			 * The headers of the request
-			 */
-			std::unordered_map<std::string, std::string> headers;
-
-			/**
-			 * The get arguments of the request
+			 * The get arguments of the request.  This includes get arguments as well as headers
 			 */
 			std::unordered_map<std::string, std::string> get_args;
 
@@ -40,16 +35,10 @@ namespace httpd {
 			HttpRequest();
 			~HttpRequest();
 
-			//add or get header values
-			void add_header(std::string key, std::string value);
-			std::string get_header(std::string key);
-
-			//add or get GET args
-			void add_ga(std::string key, std::string value);
-			std::string get_ga(std::string key);
+			//add or get GET args or HEADERS
+			void add_arg(std::string key, std::string value);
+			std::string get_arg(std::string key);
 			
-			std::unordered_map<std::string, std::string> get_headers();
-
 			std::unordered_map<std::string, std::string> get_get_args();
 
 			void set_has_post_data(bool has_post_data);
@@ -59,7 +48,6 @@ namespace httpd {
 			MHD_PostProcessor* get_post_processor();
 
       void set_prop(std::string key, void* value);
-
       void* get_prop(std::string key);
 			
 	};

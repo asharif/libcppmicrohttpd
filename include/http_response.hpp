@@ -38,7 +38,7 @@ namespace httpd {
 			void add_header(std::string key, std::string value);
 			void add_to_buffer(std::string data);
 			std::string get_data_buffer();
-			void write_data(const char data[], size_t size, uint32_t status_code);
+			void write_data(const char data[], size_t size, uint32_t status_code, bool is_error);
 			int get_mhd_result();
 
 	};

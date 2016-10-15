@@ -16,9 +16,9 @@ namespace httpd {
 
 		public:
 
-		void handle(HttpRequest& request, HttpResponse& response);
+		int handle(HttpRequest& request, HttpResponse& response);
 
-		void handle_streaming_data(HttpRequest& request, HttpResponse& response, std::string filename, std::string content_type,
+		int handle_streaming_data(HttpRequest& request, HttpResponse& response, std::string filename, std::string content_type,
 				 	std::string transfer_encoding, const char *data, uint64_t off, size_t size);
 
 
