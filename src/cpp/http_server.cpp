@@ -30,7 +30,7 @@ void httpd::HttpServer::start() {
 
 	using namespace std;
 
-	mhd_daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY , port, NULL, NULL, &front_controller_c_hook, this,
+	mhd_daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | USE_EPOLL , port, NULL, NULL, &front_controller_c_hook, this,
 			MHD_OPTION_THREAD_POOL_SIZE, tpool_size, MHD_OPTION_END);
 
 	if(mhd_daemon == NULL) {
