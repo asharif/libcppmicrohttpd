@@ -1,9 +1,13 @@
 SHELL=/bin/bash
+
+
+VERSION=local
+
 SRC=`pwd`/src/cpp/**
 INC=-I `pwd`/include/ -I `pwd`/src/hpp/ -I $(BOOST_CPP_HOME) 
 SHARED_LIB_DEP=$(LIB_MICROHTTP_HOME)libmicrohttpd.so $(BOOST_CPP_HOME)/stage/lib/libboost_program_options.so $(LIB_LOG4CPP_HOME)/liblog4cpp.so
-BIN=bin/cppmicrohttpd
-SHARED_LIB=lib/libcppmicrohttpd.so
+BIN=bin/cppmicrohttpd-$(VERSION)
+SHARED_LIB=lib/libcppmicrohttpd-$(VERSION).so
 LINUX=`uname`
 
 .PHONY: defalut, debug, lib, lib-debug
